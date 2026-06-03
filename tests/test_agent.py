@@ -1,4 +1,5 @@
 import pytest
+import os
 from unittest.mock import patch, MagicMock
 from agent.agente import executar_agente
 
@@ -31,10 +32,6 @@ class TestQAAgent:
         assert resultado["status"] == "sucesso"
         assert resultado["resposta"] is not None
 
-    # -------------------------------------------------------
-    # Validação de conteúdo
-    # -------------------------------------------------------
-
     def test_resposta_regressao_menciona_conceito(self):
         resultado = executar_agente("O que é teste de regressão?")
         assert resultado["status"] == "sucesso"
@@ -62,10 +59,6 @@ class TestQAAgent:
         assert resultado["status"] == "sucesso"
         assert duracao < 15
 
-    # -------------------------------------------------------
-    # Mocks — falha da API
-    # -------------------------------------------------------
-
     def test_falha_api_retorna_status_falha(self):
         with patch("agent.agente.groq_client") as mock_client:
             mock_client.chat.completions.create.side_effect = Exception("API indisponível")
@@ -81,7 +74,7 @@ class TestQAAgent:
                 resultado = executar_agente("O que é BDD?")
                 assert resultado["status"] == "falha"
             except Exception:
-                pytest.fail("O agente não deveria levantar exceção — deveria retornar status falha")
+                pytest.fail("O agente não deveria levantar exceção")
 
     def test_mock_resposta_controlada(self):
         mock_response = MagicMock()
